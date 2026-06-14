@@ -1,33 +1,33 @@
+# ER図
 
 ```mermaid
 erDiagram
-  users ||--o{ fish_logs : "投稿する"
-  fish_logs ||--o{ photos : "持つ"
 
-  users {
-    int id PK
-    string email
-    string password_digest
+users {
     string name
-    datetime created_at
-  }
+    string address
+}
 
-  fish_logs {
+fishing_logs {
     int id PK
     int user_id FK
-    string fish_name
+    int fish_species_id FK
     decimal size
-    decimal weight
-    string location
-    string tide_type
+    decimal latitude
+    decimal longitude
     datetime fished_at
-    datetime created_at
-  }
+    string lure
+    string memo
+    string weather
+    string tide
+}
 
-  photos {
+fish_species {
     int id PK
-    int fish_log_id FK
-    string image_url
-    datetime created_at
-  }
+    string name UK
+}
+
 ```
+
+- 写真管理はActive Storageを使用しています
+- usersテーブルについても、Deviseを使用しているため、追加カラムだけ記載しています。
