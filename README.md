@@ -4,14 +4,15 @@
 erDiagram
 
 users ||--o{ fishing_logs : "has_many"
+prefectures ||--o{ users : "has_many/belongs_to"
 
 fish_species ||--o{fishing_logs : "has_many/belongs_to"
 
 
 users {
     string name "null:false"
-    string address　"null:false"
-    string introduction　"任意"
+    string introduction "null:true"
+    int prefecture_id FK "null:false"
 }
 
 fishing_logs {
@@ -32,6 +33,11 @@ fish_species {
     int id PK
     string name UK "null:false"
     boolean is_marine "default:true"
+}
+
+prefectures {
+    int id PK
+    string prefecture UK
 }
 
 
