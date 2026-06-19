@@ -5,7 +5,7 @@ erDiagram
     users ||--o{ fishing_logs : "has_many / belongs_to"
     fish_species ||--o{ fishing_logs : "has_many / belongs_to"
     lure_categories ||--o{ lure_types : "has_many / belongs_to"
-    lure_types ||--o{ fishing_logs : "has_many / belongs_to"
+    lure_categories ||--o{ fishing_logs : "has_many / belongs_to"
 
     prefectures {
         int id PK
