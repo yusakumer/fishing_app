@@ -6,6 +6,7 @@ erDiagram
     fish_species ||--o{ fishing_logs : "has_many / belongs_to"
     lure_categories ||--o{ lure_types : "has_many / belongs_to"
     lure_categories ||--o{ fishing_logs : "has_many / belongs_to"
+    water_types ||--o{ fishing_logs : "has_many / belongs_to"
 
     prefectures {
         int id PK
@@ -13,7 +14,6 @@ erDiagram
     }
 
     users {
-        int id PK
         int prefecture_id FK
         string name
         string introduction
@@ -21,14 +21,15 @@ erDiagram
 
     fishing_logs {
         int id PK
-        int user_id FK
+        int user_email FK
         int fish_species_id FK
         int lure_type_id FK
+        int water_type_id FK
         int size
         decimal latitude
         decimal longitude
         datetime fished_at
-        string memo
+        text memo
         string weather
         string tide
     }
@@ -36,7 +37,6 @@ erDiagram
     fish_species {
         int id PK
         string name UK
-        boolean is_marine
     }
 
     lure_categories {
@@ -47,6 +47,11 @@ erDiagram
     lure_types {
         int id PK
         int lure_category_id FK
+        string name UK
+    }
+
+    water_types {
+        int id PK
         string name UK
     }
 ```
