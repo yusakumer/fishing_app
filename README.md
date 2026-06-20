@@ -55,3 +55,5 @@ erDiagram
         string name UK
     }
 ```
+devise使用しているため、userテーブルにはemailを追記してません
+usersテーブル、fishing_logsについては、ActiveStorageを使用しているため、カラムには追記していません
