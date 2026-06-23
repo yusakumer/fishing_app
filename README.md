@@ -1,3 +1,10 @@
+# 技術選定
+## Ruby
+## Ruby on Rails
+## React
+## Doker
+
+
 ```mermaid
 erDiagram
 
