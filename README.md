@@ -28,7 +28,7 @@ erDiagram
 
     fishing_logs {
         int id PK
-        int user_email FK
+        int user_id FK
         int fish_species_id FK
         int lure_type_id FK
         int water_type_id FK
