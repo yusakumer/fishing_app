@@ -1,6 +1,6 @@
 # 技術選定
-## Ruby
-## Ruby on Rails
+## Ruby　3.2
+## Ruby on Rails 8.0
 ## React
 ## Doker
 
