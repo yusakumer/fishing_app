@@ -1,0 +1,19 @@
+# Railsの秘密鍵
+/backend/config/master.key
+
+# 環境変数ファイル
+/.env
+/.env.*
+!/.env.example
+/backend/.env
+/backend/.env.*
+!/backend/.env.example
+
+# 実行時に作られるファイル
+/backend/log/*
+!/backend/log/.keep
+/backend/tmp/*
+!/backend/tmp/.keep
+
+# IDEの個人設定
+/.idea/
