@@ -17,7 +17,7 @@
 - 開発環境: Docker Compose
 - データベース: PostgreSQL
 - 認証: Devise + devise-jwt
-- JWTの無効化: Redisで失効済みJWTを管理する
+- JWTの無効化: PostgreSQLのDenylistテーブルで失効済みJWTを管理する
 - 非同期処理: Sidekiq + Redisを使用予定
 - JWTのフロントエンド保管先: HttpOnly Cookieを使用する
 

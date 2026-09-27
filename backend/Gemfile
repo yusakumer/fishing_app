@@ -51,4 +51,5 @@ end
 
 gem "devise"
 gem "devise-jwt"
-gem "redis", "5.4.1"
+gem "redis", "~> 5.4"
+gem "bullet"
