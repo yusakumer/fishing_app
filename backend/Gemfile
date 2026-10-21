@@ -47,9 +47,17 @@ group :development, :test do
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
   gem "rubocop-rails-omakase", require: false
+
+  gem "rspec-rails"
+
+  gem "factory_bot_rails"
+
 end
 
 gem "devise"
 gem "devise-jwt"
 gem "redis", "~> 5.4"
 gem "bullet"
+gem "faker"
+gem "annotate"
+
