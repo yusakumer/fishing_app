@@ -5,16 +5,19 @@ require "rails/all"
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
+require_relative '../lib/jwt_cookie_auth'
 
 module App
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 8.1
+    config.middleware.use ActionDispatch::Cookies
+    config.middleware.insert_before Warden::Manager,JwtCookieAuth
 
     # Please, add to the `ignore` list any other `lib` subdirectories that do
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
-    config.autoload_lib(ignore: %w[assets tasks])
+    config.autoload_lib(ignore: %w[assets tasks jwt_cookie_auth.rb])
 
     # Configuration for the application, engines, and railties goes here.
     #
@@ -30,5 +33,7 @@ module App
     config.api_only = true
     
     config.time_zone = "Tokyo"
+
+
   end
 end
