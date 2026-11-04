@@ -4,9 +4,9 @@ Rails.application.routes.draw do
     sessions: "users/sessions",
   }
 
-  if Rails.env.development?
+  if Rails.env.development? || Rails.env.test?
     namespace :dev do
-      get "auth_check", to: "auth_checks#show"
+      get "auth_checks", to: "auth_checks#show"
     end
   end
 
