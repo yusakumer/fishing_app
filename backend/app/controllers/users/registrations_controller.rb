@@ -40,10 +40,14 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   protected
 
+  # Deviseの登録後ログイン処理を上書きし、ログイン情報をセッションには保存しない。
   def sign_up(resource_name, resource)
     sign_in(resource_name,resource, store: false)
   end
 
+  # Deviseが登録処理の結果を返す際に呼ぶメソッドを上書きする。
+  # 保存済みなら201と完了メッセージ、未保存なら422とエラー一覧をJSONで返す。
+  # ここではUserの保存は行わない。現在の応答は登録用なので、更新機能の実装時は見直す。
   def respond_with(resource,_opts = {})
     if resource.persisted?
       render status: :created, json: { message: "登録が完了しました。" }
@@ -54,6 +58,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   # If you have extra params to permit, append them to the sanitizer.
+  # create前のbefore_actionから呼ばれ、登録時に受け付ける項目へ名前と都道府県IDを追加する。
+  # 入力の許可だけを行い、値の検証やDB保存は別の処理に任せる。
   def configure_sign_up_params
     devise_parameter_sanitizer.permit(:sign_up, keys: [:name, :prefecture_id])
   end
