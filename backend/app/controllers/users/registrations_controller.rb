@@ -43,6 +43,14 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # Deviseの登録後ログイン処理を上書きし、ログイン情報をセッションには保存しない。
   def sign_up(resource_name, resource)
     sign_in(resource_name,resource, store: false)
+    token = request.env.fetch("warden-jwt_auth.token")
+    cookies[:access_token] = {
+      value: token,
+      httponly: true,
+      secure: Rails.env.production?,
+      same_site: :lax,
+      path: "/"
+    }
   end
 
   # Deviseが登録処理の結果を返す際に呼ぶメソッドを上書きする。

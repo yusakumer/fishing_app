@@ -17,6 +17,18 @@ RSpec.describe "Users::Registrations", type: :request do
         }.to change(User, :count).by(1)
         expect(response.status).to eq(201)
       end
+
+      it "登録直後にログイン操作なしで本人として認証できる" do
+        post "/users", params: {user: user_params }, as: :json
+        expect(cookies["access_token"]).to be_present
+        get "/dev/auth_checks", as: :json
+        expect(response).to have_http_status(:ok)
+        user_id = User.find_by!(email: user_params[:email]).id
+        puts(user_id)
+        expect(response.parsed_body["user_id"]).to eq(user_id)
+
+
+      end
     end
     
     context "メールアドレスが登録済みの場合" do
