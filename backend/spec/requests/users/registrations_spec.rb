@@ -1,6 +1,9 @@
 require 'rails_helper'
+require 'time'
 
 RSpec.describe "Users::Registrations", type: :request do
+  include ActiveSupport::Testing::TimeHelpers
+
   describe "POST /users" do
     let(:prefecture) { FactoryBot.create(:prefecture) }
 
@@ -16,6 +19,28 @@ RSpec.describe "Users::Registrations", type: :request do
           post "/users" , params: {user: user_params}, as: :json 
         }.to change(User, :count).by(1)
         expect(response.status).to eq(201)
+      end
+
+      it "登録時にCookieの有効期限を1日後に設定する" do
+        freeze_time do
+          post "/users", params: { user: user_params }, as: :json
+          expect(response).to have_http_status(:created)
+
+          # 次のリクエストを送る前に、Cookieの期限をレスポンスから取り出す。
+          cookie_headers = Array(response.headers["Set-Cookie"])
+          access_token_cookie = cookie_headers.find do |header|
+            header.start_with?("access_token=")
+          end
+          puts cookie_headers
+          puts access_token_cookie
+          expect(access_token_cookie).to be_present
+
+          expires_text = access_token_cookie[/expires=([^;]+)/i, 1]
+          expect(expires_text).to be_present
+
+          # HTTPの日付文字列を時刻へ変換し、1日後と一致するか確認する。
+          expect(Time.httpdate(expires_text)).to eq(1.day.from_now)
+        end
       end
 
       it "登録直後にログイン操作なしで本人として認証できる" do

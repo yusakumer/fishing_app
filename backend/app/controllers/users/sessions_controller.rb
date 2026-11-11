@@ -33,7 +33,8 @@ class Users::SessionsController < Devise::SessionsController
       httponly: true,
       secure: Rails.env.production?,
       same_site: :lax,
-      path: "/"
+      path: "/",
+      expires: 1.day.from_now
     }
     render status: :ok, json: {message: "ログインに成功しました"}
   end

@@ -49,7 +49,8 @@ class Users::RegistrationsController < Devise::RegistrationsController
       httponly: true,
       secure: Rails.env.production?,
       same_site: :lax,
-      path: "/"
+      path: "/",
+      expires: 1.day.from_now
     }
   end
 
