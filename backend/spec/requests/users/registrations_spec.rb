@@ -31,8 +31,7 @@ RSpec.describe "Users::Registrations", type: :request do
           access_token_cookie = cookie_headers.find do |header|
             header.start_with?("access_token=")
           end
-          puts cookie_headers
-          puts access_token_cookie
+
           expect(access_token_cookie).to be_present
 
           expires_text = access_token_cookie[/expires=([^;]+)/i, 1]
