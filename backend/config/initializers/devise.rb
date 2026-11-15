@@ -316,5 +316,6 @@ Devise.setup do |config|
 
   config.jwt do |jwt|
     jwt.secret = Rails.application.credentials.dig(:devise_jwt, :secret_key) || raise("devise_jwt.secret_key is not configured")
+    jwt.expiration_time = 1.day.to_i
   end
 end
