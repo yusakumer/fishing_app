@@ -30,7 +30,7 @@ RSpec.describe "Dev::AuthChecks", type: :request do
         get "/dev/auth_checks", as: :json
         expect(response).to have_http_status(:ok)
 
-        #JWTがの有効期限（1日）、1日と1秒後に進め、JWTが失効処理される確認
+        #JWTがの有効期限（1日）、1日と1秒後に進め、JWTが拒否される確認
         travel_to(1.day.from_now + 1.minute) do
           get "/dev/auth_checks",
               headers: { "Authorization": "Bearer #{token}" },
