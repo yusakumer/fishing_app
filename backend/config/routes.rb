@@ -10,6 +10,8 @@ Rails.application.routes.draw do
     end
   end
 
+  get "/api/v1/users/me", to: "profiles#show"
+
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
