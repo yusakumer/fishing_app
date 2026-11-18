@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_30_162256) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_18_063100) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -39,7 +39,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_30_162256) do
     t.datetime "updated_at", null: false
     t.string "name", null: false
     t.bigint "prefecture_id", null: false
-    t.string "introduction"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["prefecture_id"], name: "index_users_on_prefecture_id"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
