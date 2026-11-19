@@ -11,6 +11,7 @@ Rails.application.routes.draw do
   end
 
   get "/api/v1/users/me", to: "profiles#show"
+  patch "/api/v1/users/me", to: "profiles#update"
 
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
