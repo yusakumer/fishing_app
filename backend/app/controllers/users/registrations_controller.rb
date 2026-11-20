@@ -55,13 +55,13 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   # Deviseが登録処理の結果を返す際に呼ぶメソッドを上書きする。
-  # 保存済みなら201と完了メッセージ、未保存なら422とエラー一覧をJSONで返す。
+  # 保存済みなら201とユーザー情報、未保存なら422とエラー一覧をJSONで返す。
   # ここではUserの保存は行わない。現在の応答は登録用なので、更新機能の実装時は見直す。
   def respond_with(resource,_opts = {})
     if resource.persisted?
-      render status: :created, json: { message: "登録が完了しました。" }
+      render status: :created, json: { user: resource.slice(:id, :email, :name, :prefecture_id) }
     else
-      render status: :unprocessable_content, json: { message: resource.errors.full_messages }
+      render status: :unprocessable_content, json: { errors: resource.errors.full_messages }
     end
 
   end

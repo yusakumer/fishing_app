@@ -14,7 +14,7 @@ RSpec.describe "Profiles", type: :request do
       let(:user) { FactoryBot.create(:user) }
 
       it "本人のプロフィールを200で返す" do
-        post "/users/sign_in",
+        post "/api/v1/users/sign_in",
              params: { user: { email: user.email, password: user.password } },
              as: :json
         expect(response).to have_http_status(:ok)
@@ -35,6 +35,53 @@ RSpec.describe "Profiles", type: :request do
   end
 
   describe "PATCH /api/v1/users/me" do
+    context "未ログインの場合" do
+      let!(:user) { FactoryBot.create(:user) }
+
+      it "401を返し、ユーザー情報を更新しない" do
+        expect {
+          patch "/api/v1/users/me",
+                params: { user: { name: "更新用の名前" } },
+                as: :json
+        }.not_to change { user.reload.attributes }
+
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    context "ログイン済みで入力が不正な場合" do
+      let(:user) { FactoryBot.create(:user) }
+
+      before do
+        post "/api/v1/users/sign_in",
+             params: { user: { email: user.email, password: user.password } },
+             as: :json
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "名前が空なら422を返し、ユーザー情報を更新しない" do
+        expect {
+          patch "/api/v1/users/me",
+                params: { user: { name: "" } },
+                as: :json
+        }.not_to change { user.reload.attributes }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.parsed_body["errors"]).to be_present
+      end
+
+      it "都道府県が空なら422を返し、名前も含めて更新しない" do
+        expect {
+          patch "/api/v1/users/me",
+                params: { user: { name: "更新用の名前", prefecture_id: nil } },
+                as: :json
+        }.not_to change { user.reload.attributes }
+
+        expect(response).to have_http_status(:unprocessable_content)
+        expect(response.parsed_body["errors"]).to be_present
+      end
+    end
+
     context "ログイン済みで正しい入力の場合" do
       let(:user) { FactoryBot.create(:user) }
       let(:another_prefecture) { FactoryBot.create(:prefecture) }
@@ -48,7 +95,7 @@ RSpec.describe "Profiles", type: :request do
       end
 
       it "更新されたUser情報と200を返す" do
-        post "/users/sign_in",
+        post "/api/v1/users/sign_in",
              params: { user: { email: user.email, password: user.password } },
              as: :json
         expect(response).to have_http_status(:ok)

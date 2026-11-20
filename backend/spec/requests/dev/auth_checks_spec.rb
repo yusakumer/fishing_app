@@ -16,7 +16,7 @@ RSpec.describe "Dev::AuthChecks", type: :request do
 
     context "JWTの有効期限が切れている場合" do
       it "401を返す" do
-        post "/users/sign_in",
+        post "/api/v1/users/sign_in",
              params: { user: {email: user.email, password: user.password } },
              as: :json
 
@@ -53,7 +53,7 @@ RSpec.describe "Dev::AuthChecks", type: :request do
     context "正常なCookieの場合" do
 
       it "200とログインしたユーザーIDを返す" do
-        post "/users/sign_in",
+        post "/api/v1/users/sign_in",
              params: {
                user: {
                  email: user.email,

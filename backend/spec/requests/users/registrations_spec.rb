@@ -4,7 +4,7 @@ require 'time'
 RSpec.describe "Users::Registrations", type: :request do
   include ActiveSupport::Testing::TimeHelpers
 
-  describe "POST /users" do
+  describe "POST /api/v1/users" do
     let(:prefecture) { FactoryBot.create(:prefecture) }
 
     context "入力が正しい場合" do
@@ -16,14 +16,23 @@ RSpec.describe "Users::Registrations", type: :request do
 
       it "ユーザーが登録できる" do
         expect {
-          post "/users" , params: {user: user_params}, as: :json 
+          post "/api/v1/users" , params: {user: user_params}, as: :json
         }.to change(User, :count).by(1)
         expect(response.status).to eq(201)
+        registered_user = User.find_by!(email: user_params[:email])
+        expect(response.parsed_body).to eq(
+          "user" => {
+            "id" => registered_user.id,
+            "email" => user_params[:email],
+            "name" => user_params[:name],
+            "prefecture_id" => prefecture.id
+          }
+        )
       end
 
       it "登録時にCookieの有効期限を1日後に設定する" do
         freeze_time do
-          post "/users", params: { user: user_params }, as: :json
+          post "/api/v1/users", params: { user: user_params }, as: :json
           expect(response).to have_http_status(:created)
 
           # 次のリクエストを送る前に、Cookieの期限をレスポンスから取り出す。
@@ -43,7 +52,7 @@ RSpec.describe "Users::Registrations", type: :request do
       end
 
       it "登録直後にログイン操作なしで本人として認証できる" do
-        post "/users", params: {user: user_params }, as: :json
+        post "/api/v1/users", params: {user: user_params }, as: :json
         expect(cookies["access_token"]).to be_present
         get "/dev/auth_checks", as: :json
         expect(response).to have_http_status(:ok)
@@ -54,7 +63,7 @@ RSpec.describe "Users::Registrations", type: :request do
 
       end
     end
-    
+
     context "メールアドレスが登録済みの場合" do
       let!(:existing_user) { FactoryBot.create(:user) }
 
@@ -67,10 +76,12 @@ RSpec.describe "Users::Registrations", type: :request do
 
       it "ユーザーを登録できない" do
         expect {
-          post "/users", params: { user: user_params }, as: :json
+          post "/api/v1/users", params: { user: user_params }, as: :json
         }.not_to change(User, :count)
 
         expect(response.status).to eq(422)
+        expect(response.parsed_body.keys).to eq(["errors"])
+        expect(response.parsed_body["errors"]).to be_present
       end
     end
 
@@ -84,10 +95,12 @@ RSpec.describe "Users::Registrations", type: :request do
 
       it "ユーザー登録できない" do
         expect {
-          post "/users", params: {user: user_params}, as: :json
+          post "/api/v1/users", params: {user: user_params}, as: :json
         }.not_to change(User, :count)
 
         expect(response.status).to eq(422)
+        expect(response.parsed_body.keys).to eq(["errors"])
+        expect(response.parsed_body["errors"]).to be_present
       end
     end
 
@@ -101,10 +114,12 @@ RSpec.describe "Users::Registrations", type: :request do
 
       it "ユーザー登録できない" do
         expect {
-          post "/users", params: {user: user_params}, as: :json
+          post "/api/v1/users", params: {user: user_params}, as: :json
         }.not_to change(User, :count)
 
         expect(response.status).to eq(422)
+        expect(response.parsed_body.keys).to eq(["errors"])
+        expect(response.parsed_body["errors"]).to be_present
       end
     end
   end

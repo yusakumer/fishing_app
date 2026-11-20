@@ -4,12 +4,12 @@ require 'time'
 RSpec.describe "Users::Sessions", type: :request do
   include ActiveSupport::Testing::TimeHelpers
 
-  describe "POST /users/sign_in" do
+  describe "POST /api/v1/users/sign_in" do
     let(:user) { FactoryBot.create(:user) }
 
     it "ログイン時にCookieの有効期限を1日後に設定する" do
       freeze_time do
-        post "/users/sign_in",
+        post "/api/v1/users/sign_in",
              params: { user: { email: user.email, password: user.password } },
              as: :json
         expect(response).to have_http_status(:ok)
@@ -30,10 +30,10 @@ RSpec.describe "Users::Sessions", type: :request do
     end
   end
 
-  describe "DELETE /users/sign_out" do
+  describe "DELETE /api/v1/users/sign_out" do
     let(:user) {FactoryBot.create(:user)}
     it "ログアウト後は同じJWTで認証できない" do
-      post "/users/sign_in",
+      post "/api/v1/users/sign_in",
           params: { user: { email: user.email, password: user.password } },
           as: :json
 
@@ -45,7 +45,7 @@ RSpec.describe "Users::Sessions", type: :request do
       get "/dev/auth_checks", as: :json
       expect(response).to have_http_status(:ok)
 
-      delete "/users/sign_out",as: :json
+      delete "/api/v1/users/sign_out",as: :json
       expect(response).to have_http_status(:no_content)
 
       cookies["access_token"] = token_before_logout
