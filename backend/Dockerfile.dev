@@ -5,6 +5,7 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     libpq-dev \
     postgresql-client \
     vim \
+    libvips \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app

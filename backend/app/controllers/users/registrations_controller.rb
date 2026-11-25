@@ -70,7 +70,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # create前のbefore_actionから呼ばれ、登録時に受け付ける項目へ名前と都道府県IDを追加する。
   # 入力の許可だけを行い、値の検証やDB保存は別の処理に任せる。
   def configure_sign_up_params
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:name, :prefecture_id])
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:name, :prefecture_id, :photo])
   end
 
   # If you have extra params to permit, append them to the sanitizer.

@@ -6,4 +6,8 @@ class User < ApplicationRecord
          :jwt_authenticatable, jwt_revocation_strategy: JwtDenylist
   belongs_to :prefecture
   validates :name, presence: true
+  
+  has_one_attached :photo do |attachable|
+    attachable.variant :profile, resize_to_limit: [400, 400]
+  end
 end
