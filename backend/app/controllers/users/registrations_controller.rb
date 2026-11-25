@@ -58,8 +58,18 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # 保存済みなら201とユーザー情報、未保存なら422とエラー一覧をJSONで返す。
   # ここではUserの保存は行わない。現在の応答は登録用なので、更新機能の実装時は見直す。
   def respond_with(resource,_opts = {})
+
     if resource.persisted?
-      render status: :created, json: { user: resource.slice(:id, :email, :name, :prefecture_id) }
+      user = resource.slice(:id, :email, :name, :prefecture_id)
+      
+      if resource.photo.attached?
+        user[:photo_url] = url_for(resource.photo.variant(:profile))
+      else
+        user[:photo_url] = nil
+      end
+
+      render status: :created, json: { user: user }
+      
     else
       render status: :unprocessable_content, json: { errors: resource.errors.full_messages }
     end

@@ -25,7 +25,8 @@ RSpec.describe "Users::Registrations", type: :request do
             "id" => registered_user.id,
             "email" => user_params[:email],
             "name" => user_params[:name],
-            "prefecture_id" => prefecture.id
+            "prefecture_id" => prefecture.id,
+            "photo_url" => nil
           }
         )
       end
@@ -120,6 +121,41 @@ RSpec.describe "Users::Registrations", type: :request do
         expect(response.status).to eq(422)
         expect(response.parsed_body.keys).to eq(["errors"])
         expect(response.parsed_body["errors"]).to be_present
+      end
+    end
+
+    context "写真付き登録の場合" do
+      
+      let(:prefecture) {FactoryBot.create(:prefecture)}
+      let(:photo) do
+        fixture_file_upload(
+          Rails.root.join("spec", "fixtures", "files", "profile.png"),"image/png"
+        )
+      end
+      let(:user_params) do
+        FactoryBot.attributes_for(:user).merge(
+          name: "写真付きテスト",
+          email: "test@example.com",
+          prefecture_id: prefecture.id,
+          photo: photo
+        )
+      end
+      
+      it "写真へのURLが返る" do
+        post "/api/v1/users",
+             params: { user: user_params },
+             headers: {"Accept" => "application/json"}
+
+        expect(response).to have_http_status(:created)
+        expect(response.parsed_body["user"]["photo_url"]).to be_present
+        
+        registered_user = User.find_by!(email: user_params[:email])
+        
+        expect(registered_user.photo).to be_attached
+        expect(registered_user.photo.download).to eq(
+                                                    File.binread(Rails.root.join("spec/fixtures/files/profile.png"))
+                                                  )
+        
       end
     end
   end
