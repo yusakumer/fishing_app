@@ -7,6 +7,39 @@ RSpec.describe "Users::Sessions", type: :request do
   describe "POST /api/v1/users/sign_in" do
     let(:user) { FactoryBot.create(:user) }
 
+    context "パスワードが間違っている場合" do
+      it "401を返し、認証Cookieを発行しない" do
+        post "/api/v1/users/sign_in",
+             params: { user: { email: user.email, password: "incorrect-password" } },
+             as: :json
+
+        expect(response).to have_http_status(:unauthorized)
+        expect(cookies["access_token"]).to be_blank
+
+        # ログイン失敗後も、認証が必要なAPIは利用できない
+        get "/api/v1/users/me", as: :json
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
+    context "メールアドレスが未登録の場合" do
+      it "401を返し、認証Cookieを発行しない" do
+        unregistered_email = "unregistered@example.com"
+        expect(User.exists?(email: unregistered_email)).to be(false)
+
+        # 登録済みユーザーの正しいパスワードを使い、メールだけを変える
+        post "/api/v1/users/sign_in",
+             params: { user: { email: unregistered_email, password: user.password } },
+             as: :json
+
+        expect(response).to have_http_status(:unauthorized)
+        expect(cookies["access_token"]).to be_blank
+
+        get "/api/v1/users/me", as: :json
+        expect(response).to have_http_status(:unauthorized)
+      end
+    end
+
     it "ログイン時にCookieの有効期限を1日後に設定する" do
       freeze_time do
         post "/api/v1/users/sign_in",
@@ -47,6 +80,7 @@ RSpec.describe "Users::Sessions", type: :request do
 
       delete "/api/v1/users/sign_out",as: :json
       expect(response).to have_http_status(:no_content)
+      expect(cookies["access_token"]).to be_blank
 
       cookies["access_token"] = token_before_logout
       get "/dev/auth_checks", as: :json

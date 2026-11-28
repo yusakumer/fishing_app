@@ -6,8 +6,19 @@ class User < ApplicationRecord
          :jwt_authenticatable, jwt_revocation_strategy: JwtDenylist
   belongs_to :prefecture
   validates :name, presence: true
+  validate :photo_size
   
   has_one_attached :photo do |attachable|
     attachable.variant :profile, resize_to_limit: [400, 400]
+  end
+  
+  private
+  
+  def photo_size
+    return unless photo.attached?
+    
+    if photo.blob.byte_size > 20.megabytes
+      errors.add(:photo, "は20MB以下にしてください")
+    end
   end
 end

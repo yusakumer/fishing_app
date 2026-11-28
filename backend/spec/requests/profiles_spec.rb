@@ -139,41 +139,96 @@ RSpec.describe "Profiles", type: :request do
       context "登録済みの写真を変更する場合" do
         it "新しい写真に差し替え、photo_urlと200を返す" do
           before_photo = fixture_file_upload(Rails.root.join("spec/fixtures/files/profile.png"), "image/png")
-          
+
 
           patch "/api/v1/users/me",
                 params: { user: { photo: before_photo } },
                 headers: { "Accept" => "application/json" }
 
           expect(response).to have_http_status(:ok)
-          
+
           user.reload
           before_blob_id = user.photo.blob.id
-         
-          
+
+
           after_photo = fixture_file_upload(Rails.root.join("spec/fixtures/files/profile_updated.png"), "image/png")
-          
+
           patch "/api/v1/users/me",
                 params: { user: { photo: after_photo } },
                 headers: { "Accept" => "application/json" }
 
-          
-          
+
+
           expect(response).to have_http_status(:ok)
-          
+
           user.reload
-          
+
           expect(user.photo).to be_attached
           expect(user.photo.filename.to_s).to eq("profile_updated.png")
           expect(user.photo.blob.content_type).to eq("image/png")
           expect(user.photo.download).to eq(File.binread(Rails.root.join("spec/fixtures/files/profile_updated.png")))
           expect(response.parsed_body["user"]["photo_url"]).to be_present
           expect(user.photo.blob.id).not_to eq(before_blob_id)
-          
-          
-          
-          
-        
+
+
+
+
+
+
+        end
+      end
+
+      context "別ユーザーのIDを送信した場合" do
+        let(:other_user) { FactoryBot.create(:user)}
+
+        it "別ユーザーの情報を更新しない" do
+
+
+          original_name = other_user.name
+
+          patch "/api/v1/users/me",
+                params: { user: { id: other_user.id, name: "変更後の名前"} },
+                as: :json
+
+          expect(response).to have_http_status(:ok)
+          expect(user.reload.name).to eq("変更後の名前")
+          expect(other_user.reload.name).to eq(original_name)
+
+        end
+      end
+
+      context "変更許可されていない項目を送信した場合" do
+
+        let(:other_email) { "test@example.com"}
+
+        let(:other_password) { "test123" }
+
+
+        it "メールアドレスを変更しない" do
+
+          user_email = user.email
+          patch "/api/v1/users/me",
+                params: {
+                  user: { email: other_email}
+                }
+
+          expect(response).to have_http_status(:ok)
+          expect(user.reload.email).to eq(user_email)
+          end
+
+
+        it "passwordを変更しない" do
+
+          original_user_encrypted_password = user.encrypted_password
+
+          patch "/api/v1/users/me",
+                params: {
+                  user: { password: other_password }
+                }
+
+          expect(response).to have_http_status(:ok)
+          user.reload
+          expect(user.encrypted_password).to eq(original_user_encrypted_password)
 
         end
       end
